@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
-import os
 import unittest
 import random
-from functools import partial
 
 import cereal.messaging as messaging
 from opendbc.can.parser import CANParser
 from opendbc.can.packer import CANPacker
-
-
-TEST_DBC = os.path.abspath(os.path.join(os.path.dirname(__file__), "test.dbc"))
+from opendbc.can.tests import TEST_DBC
 
 
 # Python implementation so we don't have to depend on boardd
@@ -331,10 +327,10 @@ class TestCanParserPacker(unittest.TestCase):
       for sig in sigs:
         CANParser(TEST_DBC, [(sig, msg)], [(msg, 0)])
         new_msg = msg + "1" if isinstance(msg, str) else msg + 1
-        self.assertRaises(RuntimeError, partial(CANParser, TEST_DBC, [(sig + "1", msg)], [(msg, 0)]))
-        self.assertRaises(RuntimeError, partial(CANParser, TEST_DBC, [(sig, new_msg)], [(msg, 0)]))
-        self.assertRaises(RuntimeError, partial(CANParser, TEST_DBC, [(sig, msg)], [(new_msg, 0)]))
-        self.assertRaises(RuntimeError, partial(CANParser, TEST_DBC, [(sig, new_msg)], [(new_msg, 0)]))
+        self.assertRaises(RuntimeError, CANParser, TEST_DBC, [(sig + "1", msg)], [(msg, 0)])
+        self.assertRaises(RuntimeError, CANParser, TEST_DBC, [(sig, new_msg)], [(msg, 0)])
+        self.assertRaises(RuntimeError, CANParser, TEST_DBC, [(sig, msg)], [(new_msg, 0)])
+        self.assertRaises(RuntimeError, CANParser, TEST_DBC, [(sig, new_msg)], [(new_msg, 0)])
 
 
 if __name__ == "__main__":
