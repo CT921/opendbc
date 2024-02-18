@@ -5,6 +5,8 @@ import numpy as np
 
 zmq = 'zmq'
 arch = subprocess.check_output(["uname", "-m"], encoding='utf8').rstrip()
+if arch == "aarch64" and os.path.isfile('/EON'):
+  arch = "earch64"
 
 cereal_dir = Dir('.')
 
@@ -15,9 +17,11 @@ cpppath = [
   python_path
 ]
 
-AddOption('--test',
-          action='store_true',
-          help='build test files')
+AddOption('--minimal',
+          action='store_false',
+          dest='extras',
+          default=True,
+          help='the minimum build. no tests, tools, etc.')
 
 AddOption('--asan',
           action='store_true',
@@ -61,11 +65,12 @@ Export('cereal', 'messaging')
 envCython = env.Clone()
 envCython["CPPPATH"] += [np.get_include()]
 envCython["CCFLAGS"] += ["-Wno-#warnings", "-Wno-shadow", "-Wno-deprecated-declarations"]
+envCython["CCFLAGS"].remove("-Werror")
 
 python_libs = []
 if arch == "Darwin":
   envCython["LINKFLAGS"] = ["-bundle", "-undefined", "dynamic_lookup"]
-elif arch == "aarch64":
+elif arch == "earch64":
   envCython["LINKFLAGS"] = ["-shared"]
 
   python_libs.append(os.path.basename(python_path))
